@@ -1,8 +1,8 @@
-define(['jquery',  'underscore',  'backbone' , 'ymaps'  ,
+define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
     'collections/items' , 'collections/groups',
     'views/map/element' , 'views/map/group',  'views/map/finder' ,
     'text!templates/map.html'],
-    function($, _, Backbone , ymaps , Items , Groups, MapElement , MapGroup, MapFinder , mapTemplate){
+    function($, _, Backbone , MapHelper , Items , Groups, MapElement , MapGroup, MapFinder , mapTemplate){
 
     var Map = Backbone.View.extend({
         el : $('.container .content'),
@@ -30,12 +30,8 @@ define(['jquery',  'underscore',  'backbone' , 'ymaps'  ,
         render : function() {
             this.$el.html(mapTemplate)
             this.list = this.$el.find('.list .elements');
-            this.map = new ymaps.Map(this.$el.find(".map .map_container").get(0), {
-                center: [55.76, 37.64],
-                zoom: 10,
-                controls: ['zoomControl']
-
-            });
+            this.map = new MapHelper();
+            this.map.setMap(this.$el.find(".map .map_container").get(0) , [55.76, 37.64],10);
             this.toggler = this.$el.find(".map .map_toggler");
             this.search = this.$el.find('.search__element');
             this.togglerState = "active";
@@ -69,8 +65,30 @@ define(['jquery',  'underscore',  'backbone' , 'ymaps'  ,
         setPlaceMark : function(model) {
           var attributes = model.attributes ,
               self = this,
-              center = [attributes.coord.lat , attributes.coord.lng ];
+              center = [attributes.coord.lat , attributes.coord.lng ],
+              hash = model.get('hash');
 
+          self.map.ready(function() {
+            var icon = {
+              href : '/images/'+ attributes.image +'.png',
+              size : [23, 32],
+              offset : [-12, 0]
+            };
+            self.map.addMarker({center: center , hash: hash , icon:icon});
+            model.on('remove' , function() {
+              self.map.removeMarker(hash);
+            });
+            model.on("change:active" , function() {
+              if(model.get("active")) {
+                self.map.setCenter(center);
+              }
+            });
+
+            self.map.on('click' , hash , function() {
+              self.activatePlaceMark(model);
+            });
+          });
+          /*
           ymaps.ready(function() {
             var placemark = new ymaps.Placemark(center, { },
             {
@@ -93,7 +111,7 @@ define(['jquery',  'underscore',  'backbone' , 'ymaps'  ,
             placemark.events.add('click' , function() {
               self.activatePlaceMark(model);
             });
-          });
+          }); */
         },
         activatePlaceMark : function(model) {
             this.placemarks.where({active : true}).forEach(function(placemark) {

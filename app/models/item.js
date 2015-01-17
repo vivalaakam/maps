@@ -3,8 +3,11 @@ define(['underscore' , 'backbone'] , function(_ , Backbone) {
         defaults : {
             active: false,
             search: false,
-            groups : []
+            groups : [],
+            hash : function() {
+              return '#item' + this.id
+            }
         }
-    }); 
+    });
     return Item;
 })
