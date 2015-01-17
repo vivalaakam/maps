@@ -1,0 +1,151 @@
+.mainpane {
+    height: 100%;
+    padding-top: 72px;
+    margin-top: -72px;
+    padding-bottom: 5px; 
+
+    &.list_hidden {
+        .map {
+            padding-left: 25px;
+            width: 100%;
+            left: 0px;
+
+            .map_container {
+              margin-right: -5px;
+            }
+
+        }
+
+        .map_finder {
+            display: block;
+
+        }
+
+        .list {
+            display: none;
+        }
+    }
+
+    .list {
+        margin-top: 65px;
+    }
+}
+
+.search {
+    padding: 5px;
+}
+
+.map {
+
+    padding-left: 10px;
+    position: fixed;
+    top: 65px;
+    left: 340px;
+    right: 5px;
+    bottom: 5px;
+
+    .map_container {
+        height: 100%;
+        border: 1px solid #e7e7e7;
+        border-radius:3px;
+        -webkit-border-radius: 3px;
+        margin-right: 15px;
+    }
+
+    .map_toggler {
+        width: 10px;
+        margin-left: -10px;
+        float:left;
+        height: 100%;
+        background-color: green;
+    }
+}
+
+.element {
+    margin: 2px 5px;
+    border: 1px solid #e7e7e7 ;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    background-color:#f8f8f8;
+    min-height: 40px;
+
+    .element_hidden {
+        display: none;
+    }
+
+    &.active {
+        background-color: #dff0d8;
+        border-color:#d6e9c6 ;
+
+        .element_hidden {
+            display: block;
+        }
+    }
+    .element_image {
+        line-height: 36px;
+    }
+}
+
+.group {
+
+    margin: 2px 5px;
+
+    .group_values {
+        .element {
+            display: none;
+        }
+    }
+
+    .group_expand {
+        margin: 2px 5px;
+    }
+
+    &.expanded {
+        .group_values {
+            .element {
+                display: block;
+            }
+        }
+    }
+}
+
+.active_search .element {
+    display:none;
+    &.searched {
+        display:block;
+    }
+}
+
+.map_finder {
+    display: none;
+    position: absolute;
+    left: 1px;
+    top: 3px;
+    z-index: 15;
+
+    &.active {
+        width:41.66666667%;
+    }
+
+    .map_finder__wrapper {
+        padding: 2px 5px;
+    }
+
+    .map_finder__results {
+
+        background-color: #fff;
+        border-radius: 3px;
+        -webkit-border-radius: 3px;
+        line-height: 34px;
+        margin: 0px 5px;
+
+        &:empty {
+            display: none;
+        }
+    }
+}
+
+
+.finder.list-group-item {
+    padding: 2px 12px;
+}
