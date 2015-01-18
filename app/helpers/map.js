@@ -51,6 +51,10 @@ define(['helpers/map/yamap'] , function(YaMap) {
       return '#hash'+this._counter++;
     };
 
+    Map.prototype.getCenterAndZoom = function(data) {
+      return this._map.getCenterAndZoom(data);
+    }
+
     return Map;
   }());
   return Map;

@@ -1,8 +1,8 @@
 define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
     'collections/items' , 'collections/groups',
     'views/map/element' , 'views/map/group',  'views/map/finder' ,
-    'text!templates/map.html'],
-    function($, _, Backbone , MapHelper , Items , Groups, MapElement , MapGroup, MapFinder , mapTemplate){
+    'text!templates/map.html' , 'models/mapdefault'],
+    function($, _, Backbone , MapHelper , Items , Groups, MapElement , MapGroup, MapFinder , mapTemplate, MapDefault){
 
     var Map = Backbone.View.extend({
         el : $('.container .content'),
@@ -18,6 +18,7 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
         template: _.template(mapTemplate),
         grouped: false,
         initialize: function() {
+            this.defaults = new MapDefault();
             this.groups = new Groups();
             this.placemarks = new Items();
             this.groups.setLinks(this.placemarks);
@@ -28,10 +29,17 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
 
         },
         render : function() {
+          var self = this;
             this.$el.html(mapTemplate)
             this.list = this.$el.find('.list .elements');
             this.map = new MapHelper();
-            this.map.setMap(this.$el.find(".map .map_container").get(0) , [55.76, 37.64],10);
+            this.map.setMap(this.$el.find(".map .map_container").get(0) , this.defaults.get('center'),this.defaults.get('zoom'));
+            this.map.ready(function() {
+              self.map.on('boundschange' , '#map' , function(e) {
+                var data = self.map.getCenterAndZoom(e);
+                self.defaults.set(data);
+              })
+            });
             this.toggler = this.$el.find(".map .map_toggler");
             this.search = this.$el.find('.search__element');
             this.togglerState = "active";
@@ -65,7 +73,6 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
         setPlaceMark : function(model) {
           var attributes = model.attributes ,
               self = this,
-              center = [attributes.coord.lat , attributes.coord.lng ],
               hash = model.get('hash');
 
           self.map.ready(function() {
@@ -74,13 +81,13 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
               size : [23, 32],
               offset : [-12, 0]
             };
-            self.map.addMarker({center: center , hash: hash , icon:icon});
+            self.map.addMarker({center: attributes.coord , hash: hash , icon:icon});
             model.on('remove' , function() {
               self.map.removeMarker(hash);
             });
             model.on("change:active" , function() {
               if(model.get("active")) {
-                self.map.setCenter(center);
+                self.map.setCenter(attributes.coord );
               }
             });
 
@@ -88,30 +95,6 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
               self.activatePlaceMark(model);
             });
           });
-          /*
-          ymaps.ready(function() {
-            var placemark = new ymaps.Placemark(center, { },
-            {
-              iconLayout: 'default#image',
-              iconImageHref: '/images/'+ attributes.image +'.png',
-              iconImageSize: [23, 32],
-              iconImageOffset: [-12, 0]
-            });
-            self.map.geoObjects.add(placemark);
-            model.on('remove' , function(point) {
-              self.map.geoObjects.remove(placemark);
-            });
-
-            model.on("change:active" , function() {
-              if(model.get("active")) {
-                self.map.setCenter(center);
-              }
-            });
-
-            placemark.events.add('click' , function() {
-              self.activatePlaceMark(model);
-            });
-          }); */
         },
         activatePlaceMark : function(model) {
             this.placemarks.where({active : true}).forEach(function(placemark) {

@@ -9,10 +9,11 @@ define(['ymaps'] , function(ymaps) {
     var self = this;
     this.ready(function() {
       self._map = new ymaps.Map(container , {
-        center: center,
+        center: [center.lat , center.lng],
         zoom: zoom,
         controls: ['zoomControl']
       });
+      self._objects['#map'] = self._map;
     })
   }
 
@@ -27,7 +28,7 @@ define(['ymaps'] , function(ymaps) {
     var marker = new ymaps.GeoObject({
       geometry: {
         type: "Point",
-        coordinates: data.center
+        coordinates: [data.center.lat , data.center.lng]
       }
     } , options);
     this._objects[data.hash] = marker;
@@ -35,7 +36,7 @@ define(['ymaps'] , function(ymaps) {
   };
 
   YaMap.prototype.setCenter = function(coord) {
-    this._map.setCenter(coord);
+    this._map.setCenter([coord.lat , coord.lng]);
   }
 
   YaMap.prototype.ready = ymaps.ready;
@@ -43,6 +44,17 @@ define(['ymaps'] , function(ymaps) {
   YaMap.prototype.on = function(event , hash , action) {
     var element = this._objects[hash];
     element.events.add(event, action);
+  };
+
+  YaMap.prototype.getCenterAndZoom = function(data) {
+    var center = this._map.getCenter();
+    return {
+      center : {
+        lat : center[0],
+        lng : center[1]
+      },
+      zoom : this._map.getZoom()
+    }
   };
 
   return YaMap;

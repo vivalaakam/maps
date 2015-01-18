@@ -3,7 +3,8 @@
         jquery: '../scripts/jquery',
         underscore: '../scripts/underscore',
         backbone: '../scripts/backbone',
-        ymaps : "//api-maps.yandex.ru/2.1/?lang=ru-RU"
+        ymaps : "//api-maps.yandex.ru/2.1/?lang=ru-RU",
+        localStorage : "../scripts/backbone.localstorage"
     },
     shim: {
         backbone: {
@@ -15,6 +16,10 @@
         },
         ymaps: {
             exports: 'ymaps'
+        },
+        localStorage : {
+          deps : ['backbone'],
+          exports: 'Backbone'
         }
     },
 
