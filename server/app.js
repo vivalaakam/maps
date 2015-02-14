@@ -50,5 +50,7 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-app.listen(app.get('port'));
+if (app.get('env') === 'development') {
+  app.listen(app.get('port'));
+}
 module.exports = app;
