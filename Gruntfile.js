@@ -54,23 +54,22 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ['./app/**/*.js'],
-        tasks: ['requirejs'],
+        tasks: ['requirejs:dev'],
         options: {
           spawn: false,
         }
       },
       less : {
-        dev : {
           files: ['./less/*.less'],
-          tasks: ['less'],
+          tasks: ['less:dev'],
           options: {
             spawn: false,
-          }
+          
         }
       },
       template : {
           files : ['./app/templates/**/*.html'],
-          tasks: ['requirejs'],
+          tasks: ['requirejs:dev'],
           options : {
             spawn: false
           }
