@@ -64,7 +64,7 @@ module.exports = function(grunt) {
           tasks: ['less:dev'],
           options: {
             spawn: false,
-          
+
         }
       },
       template : {
@@ -92,7 +92,7 @@ module.exports = function(grunt) {
       },
       dev :{
         options : {
-          script: './server/app.js'
+          script: './server/bin/www'
         }
       }
     }
