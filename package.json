@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "build": "grunt heroku",
+    "rejoice": "echo yay!",
     "start": "node ./server/bin/www"
   },
   "engines": {
