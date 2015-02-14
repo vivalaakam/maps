@@ -2,7 +2,12 @@ define(['underscore' , 'backbone' , 'localStorage'] , function(_ , Backbone , lo
   var Defaults = Backbone.Model.extend({
     defaults : {
       center : [55.76, 37.64],
-      zoom:12
+      zoom:12,
+      group: false,
+      objects : true
+    },
+    toggle : function(name) {
+      this.set(name , !this.get(name));
     },
     initialize : function() {
       this.fetch();

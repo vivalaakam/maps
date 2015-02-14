@@ -57,5 +57,9 @@ define(['ymaps'] , function(ymaps) {
     }
   };
 
+  YaMap.prototype.resetViewport = function() {
+    this._map.container.fitToViewport();
+  }
+
   return YaMap;
 })

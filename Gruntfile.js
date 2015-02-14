@@ -1,6 +1,24 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     requirejs: {
+      production: {
+        options: {
+          baseUrl: "./app",
+          mainConfigFile: "./app/config.js",
+          out: "./public/javascripts/main.js",
+          name : "./main",
+          optimize: "uglify"
+        }
+      },
+      dev : {
+        options: {
+          baseUrl: "./app",
+          mainConfigFile: "./app/config.js",
+          out: "./public/javascripts/main.js",
+          name : "./main",
+          optimize: "none"
+        }
+      },
       compile: {
         options: {
           baseUrl: "./app",
@@ -12,10 +30,20 @@ module.exports = function(grunt) {
       }
     },
     less : {
-      development: {
+      dev: {
         options: {
           compress: false,
           yuicompress: false,
+          optimization: 2
+        },
+        files: {
+          "./public/stylesheets/style.css": "./less/app.less" // destination file and source file
+        }
+      },
+      production : {
+        options: {
+          compress: true,
+          yuicompress: true,
           optimization: 2
         },
         files: {
@@ -32,11 +60,13 @@ module.exports = function(grunt) {
         }
       },
       less : {
-        files: ['./less/*.less'],
-        tasks: ['less'],
-        options: {
-          spawn: false,
-        },
+        dev : {
+          files: ['./less/*.less'],
+          tasks: ['less'],
+          options: {
+            spawn: false,
+          }
+        }
       },
       template : {
           files : ['./app/templates/**/*.html'],
@@ -75,5 +105,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-express-server');
 
-  grunt.registerTask('default' , ['requirejs' , 'less', 'express' , 'watch']);
+  grunt.registerTask('default' , ['requirejs:dev' , 'less:dev', 'express' , 'watch']);
+  grunt.registerTask('heroku' , ['requirejs:production' , 'less:production'])
 };

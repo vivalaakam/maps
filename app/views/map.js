@@ -2,7 +2,7 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
     'collections/items' , 'collections/groups',
     'views/map/element' , 'views/map/group',  'views/map/finder' ,
     'text!templates/map.html' , 'models/mapdefault'],
-    function($, _, Backbone , MapHelper , Items , Groups, MapElement , MapGroup, MapFinder , mapTemplate, MapDefault){
+    function($, _, Backbone , MapHelper , Items , Groups, MapElement , MapGroup, MapFinder , mapTemplate, Settings){
 
     var Map = Backbone.View.extend({
         el : $('.container .content'),
@@ -18,7 +18,7 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
         template: _.template(mapTemplate),
         grouped: false,
         initialize: function() {
-            this.defaults = new MapDefault();
+            this.settings = new Settings();
             this.groups = new Groups();
             this.placemarks = new Items();
             this.groups.setLinks(this.placemarks);
@@ -30,19 +30,21 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
         },
         render : function() {
           var self = this;
-            this.$el.html(mapTemplate)
+            this.$el.html(this.template() )
+            if(self.settings.get('group')) {
+              this.$el.find('.groupItems').attr('checked' , 'checked');
+            }
             this.list = this.$el.find('.list .elements');
             this.map = new MapHelper();
-            this.map.setMap(this.$el.find(".map .map_container").get(0) , this.defaults.get('center'),this.defaults.get('zoom'));
+            this.map.setMap(this.$el.find(".map .map_container").get(0) , this.settings.get('center'),this.settings.get('zoom'));
             this.map.ready(function() {
               self.map.on('boundschange' , '#map' , function(e) {
                 var data = self.map.getCenterAndZoom(e);
-                self.defaults.set(data);
+                self.settings.set(data);
               })
             });
-            this.toggler = this.$el.find(".map .map_toggler");
+            this.toggleMap(false);
             this.search = this.$el.find('.search__element');
-            this.togglerState = "active";
             this.finder = this.$el.find(".map_finder__element");
 
             this.placemarks.fetch();
@@ -54,11 +56,12 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
             this.list.append(view.render().el);
         },
         addGroups: function() {
-            if(this.grouped) {
+            if(this.settings.get('group')) {
                 this.groups.each(this.addGroup , this)
             }
         },
         addItem : function(model) {
+          if(! this.settings.get('group')) {
             var self = this;
             var view = new MapElement({model: model , parent : this});
             self.list.append(view.render().el);
@@ -66,9 +69,12 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
               this.setPlaceMark(model);
               model.set('onMap' , true);
             }
+          }
         },
         addItems : function() {
+          if(! this.settings.get('group')) {
             this.placemarks.each(this.addItem , this);
+          }
         } ,
         setPlaceMark : function(model) {
           var attributes = model.attributes ,
@@ -119,16 +125,21 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
                 });
             }
         },
-        toggleMap : function() {
-            var map = this.$el.find(".map") , list = this.$el.find(".list") , mainpane = this.$el.find(".mainpane");
-            if(this.togglerState === "active") {
-                mainpane.addClass("list_hidden");
-                this.togglerState = "hidden";
-            } else {
-                mainpane.removeClass("list_hidden");
-                this.togglerState = "active";
+        toggleMap : function(reset) {
+            var mainpane = this.$el.find(".mainpane") , self = this;
+            if(reset !== false) {
+              this.settings.toggle('objects');
             }
-            this.map.container.fitToViewport();
+
+            if(this.settings.get('objects')) {
+              mainpane.removeClass("list_hidden");
+            } else {
+              mainpane.addClass("list_hidden");
+            }
+            this.map.ready(function() {
+              self.map.resetViewport();
+            });
+
         },
         blurFinder : function(state) {
             var finder = this.finder.closest(".map_finder");
@@ -176,8 +187,8 @@ define(['jquery',  'underscore',  'backbone' , 'helpers/map'  ,
         },
         groupItems: function() {
             this.list.empty();
-            this.grouped = !this.grouped;
-            if(this.grouped && this.groups.length) {
+            this.settings.toggle('group');
+            if(this.settings.get('group') && this.groups.length) {
                 this.addGroups();
             } else {
                 this.addItems();

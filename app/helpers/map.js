@@ -53,7 +53,11 @@ define(['helpers/map/yamap'] , function(YaMap) {
 
     Map.prototype.getCenterAndZoom = function(data) {
       return this._map.getCenterAndZoom(data);
-    }
+    };
+
+    Map.prototype.resetViewport = function() {
+      this._map.resetViewport();
+    };
 
     return Map;
   }());
