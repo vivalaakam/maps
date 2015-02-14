@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "preinstall": "echo here it comes!",
-    "postinstall": "echo there it goes!",
-    "build": "echo wow!!!!!!!!!",
+    "postinstall": "npm run build",
+    "build": "grunt heroku",
     "rejoice": "echo yay!",
     "start": "node ./server/bin/www"
   },
