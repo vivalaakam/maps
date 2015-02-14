@@ -4,7 +4,7 @@
         underscore: '../scripts/underscore',
         backbone: '../scripts/backbone',
         ymaps : "//api-maps.yandex.ru/2.1/?lang=ru-RU",
-        localStorage : "../scripts/backbone.localstorage"
+        localStorage : "../scripts/backbone.localStorage"
     },
     shim: {
         backbone: {
