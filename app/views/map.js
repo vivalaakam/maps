@@ -1,9 +1,9 @@
 define(['jquery', 'underscore', 'backbone', 'helpers/map',
     'collections/items', 'collections/groups',
-    'views/map/element', 'views/map/group', 'views/map/finder',
+    'views/map/element', 'views/map/group', 'views/map/finder', 'views/map/zoomer',
     'text!templates/map.html', 'models/mapdefault'
   ],
-  function($, _, Backbone, MapHelper, Items, Groups, MapElement, MapGroup, MapFinder, mapTemplate, Settings) {
+  function($, _, Backbone, MapHelper, Items, Groups, MapElement, MapGroup, MapFinder, MapZoomer, mapTemplate, Settings) {
 
     var Map = Backbone.View.extend({
       el: $('.container .content'),
@@ -45,6 +45,8 @@ define(['jquery', 'underscore', 'backbone', 'helpers/map',
             var data = self.map.getCenterAndZoom(e);
             self.settings.set(data);
           });
+          self.zoomer = new MapZoomer();
+          self.$el.find('.map').append(self.zoomer.el);
         });
         this.toggleMap(false);
         this.search = this.$el.find('.search__element');
@@ -54,6 +56,8 @@ define(['jquery', 'underscore', 'backbone', 'helpers/map',
         this.groups.fetch({
           reset: true
         });
+
+
       },
       addGroup: function(model) {
 
